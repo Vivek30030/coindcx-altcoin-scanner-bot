@@ -46,7 +46,7 @@ def fetch_ohlcv(pair, timeframe):
                 "high": float(candle[2]),
                 "low": float(candle[3]),
                 "close": float(candle[4]),
-                "volume": float(candle[5])
+                "volume": float(candle[5]),
             })
         return ohlcv
     except Exception as e:
@@ -112,8 +112,8 @@ def send_telegram_alert(message):
 def scan():
     print(f"Starting scan at {datetime.utcnow().isoformat()}Z")
     
-    # Send initial test message
-    send_telegram_alert("Bot started and scanning for patterns! 🤖")
+    # Send initial test message only once when the bot starts (moved to main)
+    # send_telegram_alert("Bot started and scanning for patterns! 🤖")
     
     pairs = fetch_all_pairs()
     if not pairs:
@@ -126,8 +126,8 @@ def scan():
             if not ohlcv:
                 continue
             
-            # Send message for each pair being scanned
-            send_telegram_alert(f"Scanning {pair} on {timeframe} timeframe...")
+            # Removed frequent scanning messages to reduce Telegram spam
+            # send_telegram_alert(f"Scanning {pair} on {timeframe} timeframe...")
             
             closes = [c["close"] for c in ohlcv]
             ema9 = calculate_ema(closes, 9)
@@ -149,7 +149,7 @@ def scan():
     print(f"Scan completed at {datetime.utcnow().isoformat()}Z")
 
 if __name__ == "__main__":
-    # Send startup message
+    # Send startup message only once when the bot starts
     send_telegram_alert("🚀 CoinDCX Scanner Bot is starting up!")
     
     while True:
