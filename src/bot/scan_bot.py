@@ -46,7 +46,7 @@ def fetch_ohlcv(pair, timeframe):
                 "high": float(candle[2]),
                 "low": float(candle[3]),
                 "close": float(candle[4]),
-                "volume": float(candle[5]),
+                "volume": float(candle[5])
             })
         return ohlcv
     except Exception as e:
@@ -103,13 +103,18 @@ def send_telegram_alert(message):
             "text": message,
             "parse_mode": "Markdown"
         }
-        response = requests.post(url, data=payload)
+        response = requests.post(url, json=payload)
         response.raise_for_status()
+        print(f"Alert sent successfully: {message}")
     except Exception as e:
         print(f"Error sending Telegram alert: {e}")
 
 def scan():
     print(f"Starting scan at {datetime.utcnow().isoformat()}Z")
+    
+    # Send initial test message
+    send_telegram_alert("Bot started and scanning for patterns! 🤖")
+    
     pairs = fetch_all_pairs()
     if not pairs:
         print("No pairs found, skipping scan.")
@@ -120,6 +125,10 @@ def scan():
             ohlcv = fetch_ohlcv(pair, timeframe)
             if not ohlcv:
                 continue
+            
+            # Send message for each pair being scanned
+            send_telegram_alert(f"Scanning {pair} on {timeframe} timeframe...")
+            
             closes = [c["close"] for c in ohlcv]
             ema9 = calculate_ema(closes, 9)
             ema15 = calculate_ema(closes, 15)
@@ -132,7 +141,7 @@ def scan():
                     break
                 if check_pattern(ohlcv, ema9, ema15, ema50, ema200, i):
                     candle_time = datetime.fromtimestamp(ohlcv[i]["timestamp"] / 1000).strftime("%Y-%m-%d %H:%M:%S")
-                    message = f"Pattern detected on {pair} timeframe {timeframe} at {candle_time}"
+                    message = f"🎯 Pattern detected!\nPair: {pair}\nTimeframe: {timeframe}\nTime: {candle_time}"
                     print(message)
                     send_telegram_alert(message)
                     break
@@ -140,6 +149,16 @@ def scan():
     print(f"Scan completed at {datetime.utcnow().isoformat()}Z")
 
 if __name__ == "__main__":
+    # Send startup message
+    send_telegram_alert("🚀 CoinDCX Scanner Bot is starting up!")
+    
     while True:
-        scan()
-        time.sleep(120)  # Sleep for 2 minutes
+        try:
+            scan()
+            print("Waiting 120 seconds before next scan...")
+            time.sleep(120)  # Sleep for 2 minutes
+        except Exception as e:
+            error_msg = f"❌ Error in main loop: {str(e)}"
+            print(error_msg)
+            send_telegram_alert(error_msg)
+            time.sleep(60)  # Wait a minute before retrying if there's an error
