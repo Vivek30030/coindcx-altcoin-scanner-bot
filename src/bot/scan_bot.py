@@ -25,7 +25,8 @@ def fetch_all_pairs():
         response = requests.get(f"{COINDCX_API_BASE}/markets")
         response.raise_for_status()
         data = response.json()
-        pairs = [m['market'] for m in data.values() if m['base_currency'] != "USDT" and m['quote_currency'] == "USDT"]
+        # The API returns a dict with keys as market names, so iterate over keys
+        pairs = [key for key, m in data.items() if m['base_currency'] != "USDT" and m['quote_currency'] == "USDT"]
         return pairs
     except Exception as e:
         print(f"Error fetching pairs: {e}")
