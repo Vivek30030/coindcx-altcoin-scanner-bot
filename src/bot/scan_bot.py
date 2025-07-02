@@ -163,3 +163,8 @@ if __name__ == "__main__":
             scan()
             print("Waiting 120 seconds before next scan...")
             time.sleep(120)  # Sleep for 2 minutes
+        except Exception as e:
+            error_msg = f"❌ Error in main loop: {str(e)}"
+            print(error_msg)
+            send_telegram_alert(error_msg)
+            time.sleep(60)  # Wait a minute before retrying if there's an error
