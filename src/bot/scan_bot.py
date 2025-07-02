@@ -26,7 +26,12 @@ def fetch_all_pairs():
         response.raise_for_status()
         data = response.json()
         # The API returns a list, so iterate over list elements
-        pairs = [m['market'] for m in data if m['base_currency'] != "USDT" and m['quote_currency'] == "USDT"]
+        if isinstance(data, list):
+            pairs = [m['market'] for m in data if m['base_currency'] != "USDT" and m['quote_currency'] == "USDT"]
+        elif isinstance(data, dict):
+            pairs = [key for key, m in data.items() if m['base_currency'] != "USDT" and m['quote_currency'] == "USDT"]
+        else:
+            pairs = []
         return pairs
     except Exception as e:
         print(f"Error fetching pairs: {e}")
@@ -158,9 +163,3 @@ if __name__ == "__main__":
             scan()
             print("Waiting 120 seconds before next scan...")
             time.sleep(120)  # Sleep for 2 minutes
-        except Exception as e:
-            error_msg = f"❌ Error in main loop: {str(e)}"
-            print(error_msg)
-            send_telegram_alert(error_msg)
-            time.sleep(60)  # Wait a minute before retrying if there's an error
-
