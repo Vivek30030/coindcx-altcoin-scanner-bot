@@ -27,9 +27,9 @@ def fetch_all_pairs():
         data = response.json()
         # The API returns a list, so iterate over list elements
         if isinstance(data, list):
-            pairs = [m['market'] for m in data if m['base_currency'] != "USDT" and m['quote_currency'] == "USDT"]
+            pairs = [m['market'] for m in data if m.get('base_currency') != "USDT" and m.get('quote_currency') == "USDT"]
         elif isinstance(data, dict):
-            pairs = [key for key, m in data.items() if m['base_currency'] != "USDT" and m['quote_currency'] == "USDT"]
+            pairs = [key for key, m in data.items() if m.get('base_currency') != "USDT" and m.get('quote_currency') == "USDT"]
         else:
             pairs = []
         return pairs
@@ -116,7 +116,7 @@ def send_telegram_alert(message):
         print(f"Error sending Telegram alert: {e}")
 
 def scan():
-    print(f"Starting scan at {datetime.utcnow().isoformat()}Z")
+    print(f"Starting scan at {datetime.now(datetime.timezone.utc).isoformat()}Z")
     
     # Send initial test message only once when the bot starts (moved to main)
     # send_telegram_alert("Bot started and scanning for patterns! 🤖")
