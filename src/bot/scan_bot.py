@@ -1,6 +1,6 @@
 import requests
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 TELEGRAM_BOT_TOKEN = "8148338157:AAFsiUOy9sJ9eTseiq8h_pbVamyp9wniE0s"
 TELEGRAM_CHAT_ID = "819307069"
@@ -116,7 +116,7 @@ def send_telegram_alert(message):
         print(f"Error sending Telegram alert: {e}")
 
 def scan():
-    print(f"Starting scan at {datetime.now(datetime.timezone.utc).isoformat()}Z")
+    print(f"Starting scan at {datetime.now(timezone.utc).isoformat()}Z")
     
     # Send initial test message only once when the bot starts (moved to main)
     # send_telegram_alert("Bot started and scanning for patterns! 🤖")
@@ -152,7 +152,7 @@ def scan():
                     send_telegram_alert(message)
                     break
 
-    print(f"Scan completed at {datetime.utcnow().isoformat()}Z")
+    print(f"Scan completed at {datetime.now(timezone.utc).isoformat()}Z")
 
 if __name__ == "__main__":
     # Send startup message only once when the bot starts
