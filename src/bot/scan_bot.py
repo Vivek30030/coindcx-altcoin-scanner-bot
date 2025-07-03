@@ -152,7 +152,6 @@ def scan():
                     send_telegram_alert(message)
                     break
 
-    print(f"Scan completed at {datetime.now(timezone.utc).isoformat()}Z")
 
 if __name__ == "__main__":
     # Send startup message only once when the bot starts
