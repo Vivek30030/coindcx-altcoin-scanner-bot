@@ -43,7 +43,8 @@ def fetch_all_pairs():
 def fetch_ohlcv(pair, timeframe):
     try:
         interval = timeframe_to_minutes(timeframe)
-        url = f"https://public.coindcx.com/market_data/candles?pair={pair}&interval={interval}"
+        # Fix URL to use 'interval' param as string, e.g. '5m', '15m'
+        url = f"https://public.coindcx.com/market_data/candles?pair={pair}&interval={timeframe}"
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
