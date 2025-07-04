@@ -131,10 +131,10 @@ def scan():
 
     for pair in pairs:
         for timeframe in TIMEFRAMES:
-            print(f"Fetching OHLCV for {pair} on {timeframe} timeframe...")
+            # Removed per-coin fetch logs to reduce spam
             ohlcv = fetch_ohlcv(pair, timeframe)
             if not ohlcv:
-                print(f"No OHLCV data for {pair} on {timeframe}, skipping.")
+                # Removed per-coin no data logs to reduce spam
                 continue
             
             closes = [c["close"] for c in ohlcv]
