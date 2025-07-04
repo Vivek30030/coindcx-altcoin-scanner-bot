@@ -1,6 +1,6 @@
 import requests
 import time
-from datetime import datetime, timezone
+from datetime import datetime
 
 TELEGRAM_BOT_TOKEN = "8148338157:AAFsiUOy9sJ9eTseiq8h_pbVamyp9wniE0s"
 TELEGRAM_CHAT_ID = "819307069"
@@ -55,7 +55,7 @@ def fetch_ohlcv(pair, timeframe):
                 "high": float(candle[2]),
                 "low": float(candle[3]),
                 "close": float(candle[4]),
-                "volume": float(candle[5]),
+                "volume": float(candle[5])
             })
         return ohlcv
     except Exception as e:
@@ -119,10 +119,7 @@ def send_telegram_alert(message):
         print(f"Error sending Telegram alert: {e}")
 
 def scan():
-    print(f"Starting scan at {datetime.now(timezone.utc).isoformat()}Z")
-    
-    # Send initial test message only once when the bot starts (moved to main)
-    # send_telegram_alert("Bot started and scanning for patterns! 🤖")
+    print(f"Starting scan at {datetime.now().astimezone().isoformat()}")
     
     pairs = fetch_all_pairs()
     if not pairs:
@@ -134,9 +131,6 @@ def scan():
             ohlcv = fetch_ohlcv(pair, timeframe)
             if not ohlcv:
                 continue
-            
-            # Removed frequent scanning messages to reduce Telegram spam
-            # send_telegram_alert(f"Scanning {pair} on {timeframe} timeframe...")
             
             closes = [c["close"] for c in ohlcv]
             ema9 = calculate_ema(closes, 9)
@@ -155,9 +149,9 @@ def scan():
                     send_telegram_alert(message)
                     break
 
+    print(f"Scan completed at {datetime.now().astimezone().isoformat()}")
 
 if __name__ == "__main__":
-    # Send startup message only once when the bot starts
     send_telegram_alert("🚀 CoinDCX Scanner Bot is starting up!")
     
     while True:
@@ -165,9 +159,9 @@ if __name__ == "__main__":
             print("Starting a new scan cycle...")
             scan()
             print("Scan completed. Waiting 120 seconds before next scan...")
-            time.sleep(120)  # Sleep for 2 minutes
+            time.sleep(120)
         except Exception as e:
             error_msg = f"❌ Error in main loop: {str(e)}"
             print(error_msg)
             send_telegram_alert(error_msg)
-            time.sleep(60)  # Wait a minute before retrying if there's an error
+            time.sleep(60)
