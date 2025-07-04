@@ -127,10 +127,14 @@ def scan():
         print("No pairs found, skipping scan.")
         return
 
+    print(f"Found {len(pairs)} pairs to scan.")
+
     for pair in pairs:
         for timeframe in TIMEFRAMES:
+            print(f"Fetching OHLCV for {pair} on {timeframe} timeframe...")
             ohlcv = fetch_ohlcv(pair, timeframe)
             if not ohlcv:
+                print(f"No OHLCV data for {pair} on {timeframe}, skipping.")
                 continue
             
             closes = [c["close"] for c in ohlcv]
