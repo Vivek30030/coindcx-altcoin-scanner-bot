@@ -25,8 +25,11 @@ def fetch_all_pairs():
         response = requests.get(f"{COINDCX_API_BASE}/markets")
         response.raise_for_status()
         data = response.json()
-        # The API returns a list, so iterate over list elements
-        if isinstance(data, list):
+        # The API returns a list of strings (market names)
+        if isinstance(data, list) and all(isinstance(item, str) for item in data):
+            pairs = [item for item in data if item.endswith("USDT") and not item.startswith("USDT")]
+        # The API returns a list of dicts
+        elif isinstance(data, list):
             pairs = [m['market'] for m in data if m.get('base_currency') != "USDT" and m.get('quote_currency') == "USDT"]
         elif isinstance(data, dict):
             pairs = [key for key, m in data.items() if m.get('base_currency') != "USDT" and m.get('quote_currency') == "USDT"]
